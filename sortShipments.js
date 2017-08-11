@@ -31,14 +31,6 @@ const sortShipments = (input) => {
       }
   });
 
-  // find properties with array length === 0 (nothing can come before it)
-  // add those properties to tempArr and to hasOccurred
-  // push tempArr to result
-  // delete properties from dependencies (so you don't look again through them)
-  // go through dependencies and search for properties that have hasOccurred as a prop...delete prop (changed from arr to obj for faster lookup)
-  // go until dependencies has 0 properties
-  // add them to `hasOccurred`
-
   let resultArr = [];
   let hasOccurred = {};
   let dependenciesLength = Object.keys(dependencies).length;
