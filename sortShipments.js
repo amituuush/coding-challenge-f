@@ -1,74 +1,81 @@
-const sortShipments = (input) => {
-  
+const convertToeventDependenciesObj = (input) => {
   // convert input into array of 2-tuples
-  input = input.split('\n').map((line) => {
+  input = input.split('\n').map(line => {
       return line.split(', ');
   });
 
-  // convert data into hash (dependencies object) with all events and their associated dependency(ies)
-  let dependencies = {};
+  // convert data into hash (eventDependencies) with all events and associated dependency(ies)
+  let eventDependencies = {};
 
-  input.forEach((line) => {
+  input.forEach(line => {
       const first = line[0];
       const second = line[1];
       
-      // if later event hasn't been created on dependencies, set it as new property on dependencies and set it equal to a hash with event that occurred before it as a prop on said hash.
-      if (dependencies[second] === undefined){
-          dependencies[second] = {};
-          dependencies[second][first] = true;
+      // if later event hasn't been created on eventDependencies, set it as new property on eventDependencies and set it equal to a hash with event that occurred before it as a prop on said hash.
+      if (eventDependencies[second] === undefined){
+          eventDependencies[second] = {};
+          eventDependencies[second][first] = true;
       // if later event has already been created, simply add earlier event to later event's hash
       } else {
-          dependencies[second][first] = true;
+          eventDependencies[second][first] = true;
       }
   });
 
-  // if earlier event hasn't been created on dependencies, set it as prop on dependencies and set it equal to empty hash
+  // if earlier event hasn't been created on eventDependencies, set it as prop on eventDependencies and set it equal to empty hash
   // this grabs the remaining events that don't appear second in input and therefore must occur before any event
-  input.forEach((line) => {
+  input.forEach(line => {
       const first = line[0];
-      if (dependencies[first] === undefined){
-          dependencies[first] = {};
+      if (eventDependencies[first] === undefined){
+          eventDependencies[first] = {};
       }
   });
 
-  let resultArr = [];
+  return eventDependencies;
+}
+
+const sortEvents = (eventDependencies) => {
+  let sortedEvents = [];
   let hasOccurred = {};
-  let dependenciesLength = Object.keys(dependencies).length;
+  let eventDependenciesLength = Object.keys(eventDependencies).length;
 
-  while (dependenciesLength > 0) {
-    let tempArr = [];
+  while (eventDependenciesLength > 0) {
+    let lineOfEvents = [];
 
-    // find all events with no dependencies and push to `tempArr`
-    // add them to `hasOccurred` and remove them as events from dependencies object
-    for (let dep in dependencies) {
-      if (Object.keys(dependencies[dep]).length === 0) {
-        tempArr.push(dep);
-        hasOccurred[dep] = true;
-        delete dependencies[dep];
+    // find all events with no dependencies and push to `lineOfEvents`
+    // add them to `hasOccurred` and remove them as events from eventDependencies object
+    for (let event in eventDependencies) {
+      if (Object.keys(eventDependencies[event]).length === 0) {
+        lineOfEvents.push(event);
+        hasOccurred[event] = true;
+        delete eventDependencies[event];
       }
-      dependenciesLength = Object.keys(dependencies).length;
+      eventDependenciesLength = Object.keys(eventDependencies).length;
     }
 
-    // push any events with no dependencies on the same loop (tempArr) to `resultArr`
-    resultArr.push(tempArr);
+    // push any events with no dependencies on the same loop (lineOfEvents) to `sortedEvents`
+    sortedEvents.push(lineOfEvents);
 
-    // loop through every event's dependencies to check if any of these dependencies match any properties on hasOccurred. If so, delete that dependency from its associated event.
-    for (let dep in dependencies) {
-      for (let prop in dependencies[dep]) {
-        if (hasOccurred[prop]) {
-          delete dependencies[dep][prop];
+    // loop through every event's dependencies to check if any match properties on hasOccurred. If so, delete that dependency from its associated event.
+    for (let event in eventDependencies) {
+      for (let dep in eventDependencies[event]) {
+        if (hasOccurred[dep]) {
+          delete eventDependencies[event][dep];
         }
       }
     }
   }
 
-  // formatting for printed result
+  return sortedEvents;
+}
+
+// format for printed result
+const formatSortedEvents = (sortedEvents) => {
   let result = '\n';
 
-  resultArr.forEach((line) => {
+  sortedEvents.forEach(lineOfEvents => {
     let tempLine = '';
-    line.forEach((event, index) => {
-      if (index === line.length - 1) {
+    lineOfEvents.forEach((event, index) => {
+      if (index === lineOfEvents.length - 1) {
         tempLine += event + '\n';
       } else {
         tempLine += event + ', '
@@ -76,6 +83,14 @@ const sortShipments = (input) => {
     });
     result += tempLine;
   });
+
+  return result;
+}
+
+const sortShipments = (input) => {
+  const eventDependencies = convertToeventDependenciesObj(input);
+  const sortedEvents = sortEvents(eventDependencies);
+  const result = formatSortedEvents(sortedEvents);
 
   console.log(result);
 }
