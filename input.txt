@@ -1,0 +1,10 @@
+arrived_destination_port, customs_cleared
+customs_cleared, departed_destination_port
+sent_delivery_order_to_trucker, trucker_confirmed_delivery_order
+arrived_destination_port, undergoing_usda_exam
+arrived_destination_port, undergoing_fda_hold
+trucker_confirmed_delivery_order, delivery_scheduled
+undergoing_usda_exam, customs_cleared
+undergoing_fda_hold, customs_cleared
+customs_cleared, delivery_scheduled
+delivery_scheduled, departed_destination_port
