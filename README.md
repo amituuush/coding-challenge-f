@@ -21,7 +21,8 @@ I initially format the data into an array of 2-tuples, reflecting the order of t
 ```
 dependencies: { 
   customs_cleared: {
-    // we know all these dependencies need to occur before their corresponding event (customs_cleared in this case). Same goes for the remaining events and dependencies.
+    // we know all these dependencies need to occur before their corresponding event (customs_cleared in this case)
+    // Same goes for the remaining events and dependencies.
     arrived_destination_port: true,
     undergoing_usda_exam: true,
     undergoing_fda_hold: true 
